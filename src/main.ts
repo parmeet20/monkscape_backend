@@ -11,7 +11,9 @@ import notificationRoutes from './routes/notificationRoutes';
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin:ENV.FRONTEND_URL
+}));
 app.use(express.json());
 
 app.use('/api/v1/user', userRoutes);
