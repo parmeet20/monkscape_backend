@@ -46,7 +46,7 @@ export async function registerUser(data: RegisterUserRequest) {
             username,
             email,
             hashedPassword, // default role
-            role: 'admin'
+            role: 'tourist'
         },
     });
 
