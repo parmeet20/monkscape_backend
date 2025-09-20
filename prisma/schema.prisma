@@ -1,0 +1,159 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  admin
+  tourist
+  local_community
+  researcher
+}
+
+enum MediaType {
+  image
+  video
+  panorama360
+  audio
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  cancelled
+}
+
+enum EventStatus {
+  pending
+  confirmed
+  cancelled
+}
+
+model User {
+  id             String         @id @default(uuid())
+  username       String         @unique
+  email          String         @unique
+  hashedPassword String
+  role           UserRole       @default(tourist)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  bookings       Booking[]
+  reviews        Review[]
+  Post           Post[]
+  Notification   Notification[]
+}
+
+model Monastery {
+  id               String            @id @default(uuid())
+  name             String
+  description      String?
+  establishedYear  Int?
+  address          String?
+  geoLatitude      Float
+  geoLongitude     Float
+  mainImageUrl     String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  media            MonasteryMedia[]
+  digitalDocuments DigitalDocument[]
+  tours            Tour[]
+  events           Event[]
+  reviews          Review[]
+}
+
+model MonasteryMedia {
+  id          String    @id @default(uuid())
+  monastery   Monastery @relation(fields: [monasteryId], references: [id])
+  monasteryId String
+  mediaType   MediaType
+  mediaUrl    String
+  description String?
+  language    String? // For narrated audio or multilingual descriptions
+  createdAt   DateTime  @default(now())
+}
+
+model Post {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+}
+
+model DigitalDocument {
+  id           String    @id @default(uuid())
+  monastery    Monastery @relation(fields: [monasteryId], references: [id])
+  monasteryId  String
+  documentType String? // e.g., manuscript, mural, historical
+  title        String?
+  fileUrl      String
+  description  String?
+  createdAt    DateTime  @default(now())
+}
+
+model Tour {
+  id              String    @id @default(uuid())
+  monastery       Monastery @relation(fields: [monasteryId], references: [id])
+  monasteryId     String
+  title           String
+  description     String?
+  language        String?
+  durationMinutes Int?
+  createdAt       DateTime  @default(now())
+  Booking         Booking[]
+}
+
+model Event {
+  id          String      @id @default(uuid())
+  monastery   Monastery   @relation(fields: [monasteryId], references: [id])
+  monasteryId String
+  name        String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  recurring   Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  status      EventStatus
+  bookings    Booking[]
+}
+
+model Booking {
+  id          String        @id @default(uuid())
+  user        User          @relation(fields: [userId], references: [id])
+  userId      String
+  event       Event?        @relation(fields: [eventId], references: [id])
+  eventId     String?
+  tour        Tour?         @relation(fields: [tourId], references: [id])
+  tourId      String?
+  bookingDate DateTime      @default(now())
+  status      BookingStatus @default(pending)
+}
+
+model Review {
+  id          String    @id @default(uuid())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  monastery   Monastery @relation(fields: [monasteryId], references: [id])
+  monasteryId String
+  rating      Int // 1 to 5 scale
+  comment     String?
+  createdAt   DateTime  @default(now())
+}
+
+model Notification {
+  id      String @id @default(uuid())
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+  message String
+}
