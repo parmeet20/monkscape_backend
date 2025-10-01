@@ -4,6 +4,7 @@ export async function createEvent(data: {
     monasteryId: string;
     name: string;
     description?: string;
+    imageUrl?: string;
     startDate?: Date;
     endDate?: Date;
     recurring?: boolean;

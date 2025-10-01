@@ -10,7 +10,6 @@ import { AuthRequest } from "../middleware/authMiddleware";
 import { getUserById } from "../service/userService";
 import { getWebSocketServerManager } from "../ws/websocket";
 
-// Create Event - only admin
 export async function createEventHandler(req: AuthRequest, res: Response) {
     try {
         const userId = req.user?.userId;
@@ -22,7 +21,6 @@ export async function createEventHandler(req: AuthRequest, res: Response) {
             return res.status(403).json({ success: false, message: "Forbidden" });
 
         const data = req.body;
-        // You can add validation here as needed
         const newEvent = await createEvent(data);
 
         const wss = getWebSocketServerManager();
@@ -34,7 +32,6 @@ export async function createEventHandler(req: AuthRequest, res: Response) {
     }
 }
 
-// Get Event by ID
 export async function getEventHandler(req: Request, res: Response) {
     try {
         const { id } = req.params;
@@ -47,7 +44,6 @@ export async function getEventHandler(req: Request, res: Response) {
     }
 }
 
-// List All Events
 export async function listEventsHandler(req: Request, res: Response) {
     try {
         const events = await getAllEvents();
@@ -57,7 +53,6 @@ export async function listEventsHandler(req: Request, res: Response) {
     }
 }
 
-// Update Event - only admin
 export async function updateEventHandler(req: AuthRequest, res: Response) {
     try {
         const userId = req.user?.userId;
@@ -77,7 +72,6 @@ export async function updateEventHandler(req: AuthRequest, res: Response) {
     }
 }
 
-// Delete Event - only admin
 export async function deleteEventHandler(req: AuthRequest, res: Response) {
     try {
         const userId = req.user?.userId;

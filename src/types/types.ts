@@ -124,6 +124,7 @@ export const EventSchema = z.object({
   id: z.string().uuid(),
   monasteryId: z.string().uuid(),
   name: z.string().min(1),
+  imageUrl: z.string().min(1),
   description: z.string().nullable().optional(),
   startDate: z.date().nullable().optional(),
   endDate: z.date().nullable().optional(),

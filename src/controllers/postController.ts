@@ -5,6 +5,7 @@ import {
     getAllPosts,
     updatePost,
     deletePost,
+    incrementViews,
 } from "../service/postService";
 import { AuthRequest } from "../middleware/authMiddleware";
 
@@ -15,12 +16,18 @@ export async function createPostHandler(req: AuthRequest, res: Response) {
         if (!userId)
             return res.status(401).json({ success: false, message: "Unauthorized" });
 
-        const { title, description } = req.body;
+        const { title, description, imageUrl } = req.body;
         if (!title || !description) {
             return res.status(400).json({ success: false, message: "Title and description are required" });
         }
 
-        const post = await createPost({ title, description, userId });
+        let post;
+        if (imageUrl) {
+            post = await createPost({ title, description, imageUrl, userId });
+        } else {
+            post = await createPost({ title, description, userId });
+        }
+
         res.status(201).json({ success: true, post });
     } catch (error: any) {
         res.status(400).json({ success: false, message: error.message || "Failed to create post" });
@@ -68,6 +75,21 @@ export async function updatePostHandler(req: AuthRequest, res: Response) {
         res.status(200).json({ success: true, post: updatedPost });
     } catch (error: any) {
         res.status(400).json({ success: false, message: error.message || "Failed to update post" });
+    }
+}
+
+// Original (broken) handler
+export async function incrementViewHandler(req: Request, res: Response) {
+    const { id } = req.params;
+    try {
+        await incrementViews(id);
+        res.status(201).json({
+            message: "view updated"
+        })
+    } catch (error) {
+        res.status(401).json({
+            error: "error viewing post"
+        })
     }
 }
 
