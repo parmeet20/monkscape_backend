@@ -5,11 +5,15 @@ export async function createEvent(data: {
     name: string;
     description?: string;
     imageUrl?: string;
+    seats: number;
+    reserved: number;
+    ticketPrice: number;
     startDate?: Date;
     endDate?: Date;
     recurring?: boolean;
     status: "pending" | "confirmed" | "cancelled";
 }) {
+    data.reserved = 0;
     return prisma.event.create({
         data,
     });
